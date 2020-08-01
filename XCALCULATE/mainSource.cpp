@@ -9,6 +9,7 @@
 #define BTN_ADD 106
 #define BTN_SUB	 107
 #define BTN_MULT 108
+#define BTN_CLEAN 109
 
 HWND hBtnArit;
 HWND hBtnComp;
@@ -18,11 +19,13 @@ HWND hEdtMatrix3;
 HWND hBtnAdd;
 HWND hBtnSub;
 HWND hBtnMult;
+HWND hBtnClean;
 HWND hStA1;
 HWND hStA2;
 HWND hStA3;
 
 void CreateAritmeticMenu(HWND hWindow) {
+	EnableWindow(hBtnArit, false); EnableWindow(hBtnComp, true);
 	hStA1 = CreateWindow(
 		"STATIC",
 		"Matriz 1",
@@ -34,8 +37,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
 		10, 60, 250, 200,
-		hWindow, (HMENU)EDT_MATRIX1,
-		(HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStA2 = CreateWindow(
 		"STATIC",
@@ -48,8 +50,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
 		365, 60, 250, 200,
-		hWindow, (HMENU)EDT_MATRIX1,
-		(HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStA3 = CreateWindow(
 		"STATIC",
@@ -62,32 +63,35 @@ void CreateAritmeticMenu(HWND hWindow) {
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
 		195, 290, 250, 200,
-		hWindow, (HMENU)EDT_MATRIX1,
-		(HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnAdd = CreateWindowEx(
 		0, "BUTTON",
 		"+",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		260, 60, 105, 66,
-		hWindow, (HMENU)BTN_ADD,
-		(HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		hWindow, (HMENU)BTN_ADD, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnSub = CreateWindowEx(
 		0, "BUTTON",
 		"-",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		260, 126, 105, 66,
-		hWindow, (HMENU)BTN_SUB,
-		(HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		hWindow, (HMENU)BTN_SUB, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnMult = CreateWindowEx(
 		0, "BUTTON",
 		"x",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		260, 192, 105, 66,
-		hWindow, (HMENU)BTN_MULT,
-		(HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		hWindow, (HMENU)BTN_MULT, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hBtnClean = CreateWindowEx(
+		0, "BUTTON",
+		"Limpiar Cuadros",
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		465, 10, 150, 25,
+		hWindow, (HMENU)BTN_CLEAN, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 }
 void DestroyAritmeticMenu() {
@@ -104,10 +108,42 @@ void DestroyAritmeticMenu() {
 }
 
 void CreateCompoundMatrixMenu(HWND hWindow) {
-
+	EnableWindow(hBtnComp, false); EnableWindow(hBtnArit, true);
 }
 void DestroyCompoundMatrixMenu() {
 
+}
+
+short getColumns(HWND hWindow) {
+	char buff[MAX_PATH];
+	int length = GetWindowTextLength(hWindow);
+	GetWindowText(hWindow, buff, length + 1);
+	char *string = buff;
+	char prev = 0;
+	short columns = 0;
+	while (*string != 13) {
+		if (*string == 32 & (*string != prev) | *string == 9)
+			columns++;
+		prev = *string;
+		string++;
+		if (*string == NULL) break;
+	}
+	return columns + 1;
+}
+short getRows(HWND hWindow) {
+	char buff[MAX_PATH];
+	int length = GetWindowTextLength(hWindow);
+	GetWindowText(hWindow, buff, length + 1);
+	char *string = buff;
+	char prev = 0;
+	short rows = 0;
+	while (*string != NULL) {
+		if (*string == 13 & (prev != 10))
+			rows++;
+		prev = *string;
+		*string++;
+	}
+	return rows + 1;
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -127,13 +163,37 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			165, 10, 150, 25,
 			hWnd, (HMENU)BTN_COMP, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
 		);
-		EnableWindow(hBtnArit, false);
 		CreateAritmeticMenu(hWnd);
 		break;
 	}
-	case WM_COMMAND:
-		
+	case WM_COMMAND: {
+		switch (wParam) {
+		case BTN_ARIT:
+			DestroyCompoundMatrixMenu();
+			CreateAritmeticMenu(hWnd);
+			break;
+		case BTN_COMP:
+			DestroyAritmeticMenu();
+			CreateCompoundMatrixMenu(hWnd);
+			break;
+		case BTN_CLEAN:
+			SetWindowText(hEdtMatrix1, "");
+			SetWindowText(hEdtMatrix2, "");
+			SetWindowText(hEdtMatrix3, "");
+			break;
+		case BTN_ADD: {
+			
+			break;
+		}
+		case BTN_SUB:
+			
+			break;
+		case BTN_MULT:
+			
+			break;
+		}
 		break;
+	}
 	case WM_GETMINMAXINFO: {
 		LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
 		lpMMI->ptMinTrackSize.x = 640;
