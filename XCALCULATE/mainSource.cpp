@@ -114,11 +114,27 @@ void DestroyCompoundMatrixMenu() {
 
 }
 
+void initializeMatrix(float** mat, short columns, short rows) {
+	for (short i = 0; i < columns; i++) {
+		for (short j = 0; j < rows; j++) {
+			mat[i][j] = 0;
+		}
+	}
+}
+bool validMatrix(char* string) {
+	while (*string != NULL) {
+		if (!((*string > 47 & *string < 58) | *string == 10 | *string == 13 | *string == 32 | *string == 43 | *string == 45 | *string == 46 | *string == 9))
+			return false;
+		string++;
+	}
+	return true;
+}
 short getColumns(HWND hWindow) {
-	char buff[MAX_PATH];
 	int length = GetWindowTextLength(hWindow);
+	if (length == 0) return 0;
+	char buff[MAX_PATH];
 	GetWindowText(hWindow, buff, length + 1);
-	char *string = buff;
+	char* string = buff;
 	char prev = 0;
 	short columns = 0;
 	while (*string != 13) {
@@ -131,10 +147,11 @@ short getColumns(HWND hWindow) {
 	return columns + 1;
 }
 short getRows(HWND hWindow) {
-	char buff[MAX_PATH];
 	int length = GetWindowTextLength(hWindow);
+	if (length == 0) return 0;
+	char buff[MAX_PATH];
 	GetWindowText(hWindow, buff, length + 1);
-	char *string = buff;
+	char* string = buff;
 	char prev = 0;
 	short rows = 0;
 	while (*string != NULL) {
@@ -144,6 +161,36 @@ short getRows(HWND hWindow) {
 		*string++;
 	}
 	return rows + 1;
+}
+float** buildMatrix(HWND hWindow) {
+	int length = GetWindowTextLength(hWindow);
+	char buff[MAX_PATH];
+	GetWindowText(hWindow, buff, length + 1);
+	if (!validMatrix(buff)) return NULL;
+	char* string = buff;
+	char prev = 0;
+	short m = getColumns(hWindow);
+	short n = getRows(hWindow);
+	float** matrix = new float*[m];
+	for (short i = 0; i < m; i++)
+		matrix[i] = new float[n];
+	initializeMatrix(matrix, m, n);
+	for (short i = 0; i < n; i++) {
+		for (short j = 0; j < m; j++) {
+			sscanf(string, "%f", &matrix[i][j]);
+			while (((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46 | *string == 32)) & prev != 32) {
+				prev = *string;
+				string++;
+			}
+			if (*string == 13) break;
+			prev = *string;
+		}
+		while (((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46 | *string == 13 | *string == 10)) & prev != 10) {
+			prev = *string;
+			string++;
+		}
+	}
+	return matrix;
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -182,7 +229,20 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			SetWindowText(hEdtMatrix3, "");
 			break;
 		case BTN_ADD: {
-			
+			if (!(getColumns(hEdtMatrix1) == getColumns(hEdtMatrix2) & getRows(hEdtMatrix1) == getRows(hEdtMatrix2))) {
+				MessageBox(hWnd, "El orden de las matrices son diferentes.", "Orden Desigual", MB_ICONEXCLAMATION);
+				break;
+			}
+			float** matrix1 = buildMatrix(hEdtMatrix1);
+			if (matrix1 == NULL) {
+				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos.", "Datos invalidos", MB_ICONEXCLAMATION);
+				break;
+			}
+			float** matrix2 = buildMatrix(hEdtMatrix2);
+			if (matrix2 == NULL) {
+				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos.", "Datos invalidos", MB_ICONEXCLAMATION);
+				break;
+			}
 			break;
 		}
 		case BTN_SUB:
