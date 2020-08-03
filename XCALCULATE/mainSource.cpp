@@ -24,6 +24,28 @@ HWND hStA1;
 HWND hStA2;
 HWND hStA3;
 
+class Matrix {
+	float** matrix = NULL;
+	short columns;
+	short rows;
+public:
+	Matrix(float** matrix, short columns, short rows) {
+		this->matrix = matrix;
+		this->columns = columns;
+		this->rows = rows;
+	}
+	~Matrix() {
+		if (matrix != NULL) {
+			for (short i = 0; i < columns; i++)
+				delete[] matrix[i];
+			delete[] matrix;
+		}
+	}
+	float** getMatrix() { return matrix; }
+	short getColumns() { return columns; }
+	short getRows() { return rows; }
+};
+
 void CreateAritmeticMenu(HWND hWindow) {
 	EnableWindow(hBtnArit, false); EnableWindow(hBtnComp, true);
 	hStA1 = CreateWindow(
@@ -162,8 +184,21 @@ short getRows(HWND hWindow) {
 	}
 	return rows + 1;
 }
-float** buildMatrix(HWND hWindow) {
+void printMatrixOnWindow(HWND hWindow, Matrix matrix) {
+	char buff[MAX_PATH] = "";
+	char mat[24];
+	for (short i = 0; i < matrix.getColumns(); i++) {
+		for (short j = 0; j < matrix.getRows(); j++) {
+			sprintf(mat, "%.2f", matrix.getMatrix()[i][j]);
+			strcat(buff, mat); strcat(buff, "   ");
+		}
+		strcat(buff, "\r\n\r\n");
+	}
+	SetWindowText(hWindow, buff);
+}
+Matrix* buildMatrix(HWND hWindow) {
 	int length = GetWindowTextLength(hWindow);
+	if (length == 0) return NULL;
 	char buff[MAX_PATH];
 	GetWindowText(hWindow, buff, length + 1);
 	if (!validMatrix(buff)) return NULL;
@@ -190,7 +225,8 @@ float** buildMatrix(HWND hWindow) {
 			string++;
 		}
 	}
-	return matrix;
+	Matrix *r = new Matrix(matrix, m, n);
+	return r;
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -229,20 +265,19 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			SetWindowText(hEdtMatrix3, "");
 			break;
 		case BTN_ADD: {
-			if (!(getColumns(hEdtMatrix1) == getColumns(hEdtMatrix2) & getRows(hEdtMatrix1) == getRows(hEdtMatrix2))) {
-				MessageBox(hWnd, "El orden de las matrices son diferentes.", "Orden Desigual", MB_ICONEXCLAMATION);
-				break;
-			}
-			float** matrix1 = buildMatrix(hEdtMatrix1);
+			Matrix* matrix1 = buildMatrix(hEdtMatrix1);
 			if (matrix1 == NULL) {
-				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos.", "Datos invalidos", MB_ICONEXCLAMATION);
+				MessageBox(hWnd, "La matriz contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
-			float** matrix2 = buildMatrix(hEdtMatrix2);
+			printMatrixOnWindow(hEdtMatrix3, *matrix1);
+			Matrix* matrix2 = buildMatrix(hEdtMatrix2);
 			if (matrix2 == NULL) {
-				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos.", "Datos invalidos", MB_ICONEXCLAMATION);
+				MessageBox(hWnd, "La matriz contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
+			delete matrix1;
+			delete matrix2;
 			break;
 		}
 		case BTN_SUB:
