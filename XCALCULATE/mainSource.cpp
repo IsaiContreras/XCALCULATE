@@ -137,9 +137,9 @@ void DestroyCompoundMatrixMenu() {
 }
 
 void initializeMatrix(float** mat, short columns, short rows) {
-	for (short i = 0; i < columns; i++) {
-		for (short j = 0; j < rows; j++) {
-			mat[i][j] = 0;
+	for (short x = 0; x < columns; x++) {
+		for (short y = 0; y < rows; y++) {
+			mat[x][y] = 0;
 		}
 	}
 }
@@ -157,16 +157,15 @@ short getColumns(HWND hWindow) {
 	char buff[MAX_PATH];
 	GetWindowText(hWindow, buff, length + 1);
 	char* string = buff;
-	char prev = 0;
+	char prev = 32;
 	short columns = 0;
-	while (*string != 13) {
-		if (*string == 32 & (*string != prev) | *string == 9)
+	while (*string != 13 & *string != NULL) {
+		if (((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46)) & prev == 32)
 			columns++;
 		prev = *string;
 		string++;
-		if (*string == NULL) break;
 	}
-	return columns + 1;
+	return columns;
 }
 short getRows(HWND hWindow) {
 	int length = GetWindowTextLength(hWindow);
@@ -187,9 +186,9 @@ short getRows(HWND hWindow) {
 void printMatrixOnWindow(HWND hWindow, Matrix matrix) {
 	char buff[MAX_PATH] = "";
 	char mat[24];
-	for (short i = 0; i < matrix.getColumns(); i++) {
-		for (short j = 0; j < matrix.getRows(); j++) {
-			sprintf(mat, "%.2f", matrix.getMatrix()[i][j]);
+	for (short y = 0; y < matrix.getRows(); y++) {
+		for (short x = 0; x < matrix.getColumns(); x++) {
+			sprintf(mat, "%.2f", matrix.getMatrix()[x][y]);
 			strcat(buff, mat); strcat(buff, "   ");
 		}
 		strcat(buff, "\r\n\r\n");
@@ -210,18 +209,17 @@ Matrix* buildMatrix(HWND hWindow) {
 	for (short i = 0; i < m; i++)
 		matrix[i] = new float[n];
 	initializeMatrix(matrix, m, n);
-	for (short i = 0; i < n; i++) {
-		for (short j = 0; j < m; j++) {
-			sscanf(string, "%f", &matrix[i][j]);
-			while (((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46 | *string == 32)) & prev != 32) {
-				prev = *string;
+	for (short y = 0; y < n; y++) {
+		for (short x = 0; x < m; x++) {
+			while (!((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46 | *string == 13))) {
 				string++;
 			}
 			if (*string == 13) break;
-			prev = *string;
+			sscanf(string, "%f", &matrix[x][y]);
+			while (*string != 32 & *string != 13 & *string != NULL) 
+				string++;
 		}
-		while (((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46 | *string == 13 | *string == 10)) & prev != 10) {
-			prev = *string;
+		while (!((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46 | *string == NULL))) {
 			string++;
 		}
 	}
@@ -267,13 +265,13 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_ADD: {
 			Matrix* matrix1 = buildMatrix(hEdtMatrix1);
 			if (matrix1 == NULL) {
-				MessageBox(hWnd, "La matriz contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
+				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
 			printMatrixOnWindow(hEdtMatrix3, *matrix1);
 			Matrix* matrix2 = buildMatrix(hEdtMatrix2);
 			if (matrix2 == NULL) {
-				MessageBox(hWnd, "La matriz contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
+				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
 			delete matrix1;
