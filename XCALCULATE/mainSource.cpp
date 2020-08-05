@@ -35,10 +35,10 @@ public:
 		this->rows = rows;
 	}
 	~Matrix() {
-		if (matrix != NULL) {
+		if (this->matrix != NULL) {
 			for (short i = 0; i < columns; i++)
-				delete[] matrix[i];
-			delete[] matrix;
+				delete[] this->matrix[i];
+			delete[] this->matrix;
 		}
 	}
 	float** getMatrix() { return matrix; }
@@ -183,12 +183,13 @@ short getRows(HWND hWindow) {
 	}
 	return rows + 1;
 }
-void printMatrixOnWindow(HWND hWindow, Matrix matrix) {
+void printMatrixOnWindow(HWND hWindow, Matrix* matrix) {
 	char buff[MAX_PATH] = "";
 	char mat[24];
-	for (short y = 0; y < matrix.getRows(); y++) {
-		for (short x = 0; x < matrix.getColumns(); x++) {
-			sprintf(mat, "%.2f", matrix.getMatrix()[x][y]);
+	float** pMatrix = matrix->getMatrix();
+	for (short y = 0; y < matrix->getRows(); y++) {
+		for (short x = 0; x < matrix->getColumns(); x++) {
+			sprintf(mat, "%.2f",pMatrix[x][y]);
 			strcat(buff, mat); strcat(buff, "   ");
 		}
 		strcat(buff, "\r\n\r\n");
@@ -268,12 +269,13 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
-			printMatrixOnWindow(hEdtMatrix3, *matrix1);
+			printMatrixOnWindow(hEdtMatrix3, matrix1);
 			Matrix* matrix2 = buildMatrix(hEdtMatrix2);
 			if (matrix2 == NULL) {
 				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
+			printMatrixOnWindow(hEdtMatrix3, matrix2);
 			delete matrix1;
 			delete matrix2;
 			break;
