@@ -173,15 +173,17 @@ short getRows(HWND hWindow) {
 	char buff[MAX_PATH];
 	GetWindowText(hWindow, buff, length + 1);
 	char* string = buff;
-	char prev = 0;
-	short rows = 0;
+	short rows = 1;
 	while (*string != NULL) {
-		if (*string == 13 & (prev != 10))
-			rows++;
-		prev = *string;
-		*string++;
+		if (*string == 13) {
+			while (!((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46 | *string == NULL)))
+				string++;
+			if (((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46))) rows++;
+		}
+		if (*string == NULL) break;
+		string++;
 	}
-	return rows + 1;
+	return rows;
 }
 void printMatrixOnWindow(HWND hWindow, Matrix* matrix) {
 	char buff[MAX_PATH] = "";
@@ -275,7 +277,6 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
-			printMatrixOnWindow(hEdtMatrix3, matrix2);
 			delete matrix1;
 			delete matrix2;
 			break;
