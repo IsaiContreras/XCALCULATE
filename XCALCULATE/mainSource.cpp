@@ -44,6 +44,43 @@ public:
 	float** getMatrix() { return matrix; }
 	short getColumns() { return columns; }
 	short getRows() { return rows; }
+	void operator =(Matrix &mat2) {
+		this->matrix = mat2.matrix;
+		this->columns = mat2.columns;
+		this->rows = mat2.rows;
+	}
+	Matrix* operator +(Matrix &mat2) {
+		short m = this->columns;
+		short n = this->rows;
+		float** r = new float*[m];
+		for (short i = 0; i < m; i++)
+			r[i] = new float[n];
+		float** m1 = this->matrix;
+		float** m2 = mat2.getMatrix();
+		for (short y = 0; y < n; y++) {
+			for (short x = 0; x < m; x++) {
+				r[x][y] = m1[x][y] + m2[x][y];
+			}
+		}
+		Matrix* ret = new Matrix(r, m, n);
+		return ret;
+	}
+	Matrix* operator -(Matrix &mat2) {
+		short m = this->columns;
+		short n = this->rows;
+		float** r = new float*[m];
+		for (short i = 0; i < m; i++)
+			r[i] = new float[n];
+		float** m1 = this->matrix;
+		float** m2 = mat2.getMatrix();
+		for (short y = 0; y < n; y++) {
+			for (short x = 0; x < m; x++) {
+				r[x][y] = m1[x][y] - m2[x][y];
+			}
+		}
+		Matrix* ret = new Matrix(r, m, n);
+		return ret;
+	}
 };
 
 void CreateAritmeticMenu(HWND hWindow) {
@@ -83,7 +120,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hEdtMatrix3 = CreateWindowEx(
 		0, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
 		195, 290, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -271,19 +308,42 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
-			printMatrixOnWindow(hEdtMatrix3, matrix1);
 			Matrix* matrix2 = buildMatrix(hEdtMatrix2);
 			if (matrix2 == NULL) {
 				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
+			if (matrix1->getColumns() == matrix2->getColumns() & matrix1->getRows() == matrix2->getRows()) {
+				Matrix* res = *matrix1 + *matrix2;
+				printMatrixOnWindow(hEdtMatrix3, res);
+				delete res;
+			}
+			else MessageBox(hWnd, "Las matrices tienen orden desigual. No se puede realizar la suma.", "Orden Diferente", MB_ICONEXCLAMATION);
 			delete matrix1;
 			delete matrix2;
 			break;
 		}
-		case BTN_SUB:
-			
+		case BTN_SUB: {
+			Matrix* matrix1 = buildMatrix(hEdtMatrix1);
+			if (matrix1 == NULL) {
+				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
+				break;
+			}
+			Matrix* matrix2 = buildMatrix(hEdtMatrix2);
+			if (matrix2 == NULL) {
+				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
+				break;
+			}
+			if (matrix1->getColumns() == matrix2->getColumns() & matrix1->getRows() == matrix2->getRows()) {
+				Matrix* res = *matrix1 - *matrix2;
+				printMatrixOnWindow(hEdtMatrix3, res);
+				delete res;
+			}
+			else MessageBox(hWnd, "Las matrices tienen orden desigual. No se puede realizar la suma.", "Orden Diferente", MB_ICONEXCLAMATION);
+			delete matrix1;
+			delete matrix2;
 			break;
+		}
 		case BTN_MULT:
 			
 			break;
