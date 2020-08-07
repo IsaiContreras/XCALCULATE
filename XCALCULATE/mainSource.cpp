@@ -56,7 +56,7 @@ public:
 		for (short i = 0; i < m; i++)
 			r[i] = new float[n];
 		float** m1 = this->matrix;
-		float** m2 = mat2.getMatrix();
+		float** m2 = mat2.matrix;
 		for (short y = 0; y < n; y++) {
 			for (short x = 0; x < m; x++) {
 				r[x][y] = m1[x][y] + m2[x][y];
@@ -72,10 +72,32 @@ public:
 		for (short i = 0; i < m; i++)
 			r[i] = new float[n];
 		float** m1 = this->matrix;
-		float** m2 = mat2.getMatrix();
+		float** m2 = mat2.matrix;
 		for (short y = 0; y < n; y++) {
 			for (short x = 0; x < m; x++) {
 				r[x][y] = m1[x][y] - m2[x][y];
+			}
+		}
+		Matrix* ret = new Matrix(r, m, n);
+		return ret;
+	}
+	Matrix* operator *(Matrix &mat2) {
+		short m = mat2.columns;
+		short n = this->rows;
+		short b = this->columns;
+		float** r = new float*[m];
+		for (short i = 0; i < m; i++)
+			r[i] = new float[n];
+		float** m1 = this->matrix;
+		float** m2 = mat2.matrix;
+		float acum = 0;
+		for (short y = 0; y < n; y++) {
+			for (short x = 0; x < m; x++) {
+				acum = 0;
+				for (short z = 0; z < b; z++) {
+					acum = acum + (m1[z][y] * m2[x][z]);
+				}
+				r[x][y] = acum;
 			}
 		}
 		Matrix* ret = new Matrix(r, m, n);
@@ -339,13 +361,30 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				printMatrixOnWindow(hEdtMatrix3, res);
 				delete res;
 			}
-			else MessageBox(hWnd, "Las matrices tienen orden desigual. No se puede realizar la suma.", "Orden Diferente", MB_ICONEXCLAMATION);
+			else MessageBox(hWnd, "Las matrices tienen orden desigual. No se puede realizar la resta.", "Orden Diferente", MB_ICONEXCLAMATION);
 			delete matrix1;
 			delete matrix2;
 			break;
 		}
 		case BTN_MULT:
-			
+			Matrix* matrix1 = buildMatrix(hEdtMatrix1);
+			if (matrix1 == NULL) {
+				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
+				break;
+			}
+			Matrix* matrix2 = buildMatrix(hEdtMatrix2);
+			if (matrix2 == NULL) {
+				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
+				break;
+			}
+			if (matrix1->getRows() == matrix2->getColumns() & matrix1->getColumns() == matrix2->getRows()) {
+				Matrix* res = *matrix1 * *matrix2;
+				printMatrixOnWindow(hEdtMatrix3, res);
+				delete res;
+			}
+			else MessageBox(hWnd, "Columnas de matriz 1 y renglones de matriz 2 son desiguales. No se puede realizar el producto.", "Orden Incorrecto", MB_ICONEXCLAMATION);
+			delete matrix1;
+			delete matrix2;
 			break;
 		}
 		break;
