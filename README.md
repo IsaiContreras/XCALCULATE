@@ -19,18 +19,18 @@ las siguientes reglas:
 * Puede usar signo negativo.
 
 En medio de los cuadros Matriz 1 y Matriz 2 se encuentran los botones
-de operaciones: Suma "+", Resta "-", Producto "*".
+de operaciones: Suma "+", Resta "-" y Producto "*".
 Presione el botón de la operación que desea ejecutar.
-
-<img src="images/example1.png" width="450">
 
 Para la suma y resta, recuerde que el orden de las matrices debe ser igual
 (misma cantidad de filas y columnas).
 
-<img src="images/example2.png" width="450">
+<img src="images/example1.png" width="450">
 
 Para el producto de matrices, recuerde que la cantidad de columnas de matriz 1 debe ser
 igual a la cantidad de filas de la matriz 2.
+
+<img src="images/example2.png" width="450">
 
 Como puede observar en las imagenes, el resultado de la operación se mostrará
 en el cuadro Matriz Resultante.
