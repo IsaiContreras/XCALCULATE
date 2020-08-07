@@ -27,3 +27,6 @@ Para la suma y resta, recuerde que el orden de las matrices debe ser igual
 
 Para el producto de matrices, recuerde que la cantidad de columnas de matriz 1 debe ser
 igual a la cantidad de filas de la matriz 2.
+
+Como puede observar en las imagenes, el resultado de la operación se mostrará
+en el cuadro Matriz Resultante.
