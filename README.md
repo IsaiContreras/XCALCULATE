@@ -18,6 +18,10 @@ las siguientes reglas:
 * Puede usar puntos para números decimales.
 * Puede usar signo negativo.
 
+En medio de los cuadros Matriz 1 y Matriz 2 se encuentran los botones
+de operaciones: Suma "+", Resta "-", Producto "*".
+Presione el botón de la operación que desea ejecutar.
+
 <img src="images/example1.png" width="450">
 
 Para la suma y resta, recuerde que el orden de las matrices debe ser igual
