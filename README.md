@@ -18,12 +18,12 @@ las siguientes reglas:
 * Puede usar puntos para números decimales.
 * Puede usar signo negativo.
 
-<img scr="images/example1.png" width="200">
+<img src="images/example1.png" width="450">
 
 Para la suma y resta, recuerde que el orden de las matrices debe ser igual
 (misma cantidad de filas y columnas).
 
-<img scr="images/example2.png" width="200">
+<img src="images/example2.png" width="450">
 
 Para el producto de matrices, recuerde que la cantidad de columnas de matriz 1 debe ser
 igual a la cantidad de filas de la matriz 2.
