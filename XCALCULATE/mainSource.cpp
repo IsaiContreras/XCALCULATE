@@ -411,10 +411,6 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int showCmd) {
-	char globalDir[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH, globalDir);
-	char icon[MAX_PATH];
-	strcpy(icon, globalDir); strcat(icon, "\\ICON.bmp");
 	WNDCLASSEX wClass; 
 	ZeroMemory(&wClass, sizeof(WNDCLASSEX));
 	wClass.cbClsExtra = NULL; 

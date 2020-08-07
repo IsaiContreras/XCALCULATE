@@ -1,5 +1,3 @@
 #Git Ignore
 .vs
-Debug/
-*.sln
-*.vcxproj*
+XCALCULATE/Debug
