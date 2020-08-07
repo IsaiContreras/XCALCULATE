@@ -377,7 +377,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				MessageBox(hWnd, "La matriz 2 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
 				break;
 			}
-			if (matrix1->getRows() == matrix2->getColumns() & matrix1->getColumns() == matrix2->getRows()) {
+			if (matrix1->getColumns() == matrix2->getRows()) {
 				Matrix* res = *matrix1 * *matrix2;
 				printMatrixOnWindow(hEdtMatrix3, res);
 				delete res;
@@ -411,6 +411,10 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int showCmd) {
+	char globalDir[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, globalDir);
+	char icon[MAX_PATH];
+	strcpy(icon, globalDir); strcat(icon, "\\ICON.bmp");
 	WNDCLASSEX wClass; 
 	ZeroMemory(&wClass, sizeof(WNDCLASSEX));
 	wClass.cbClsExtra = NULL; 
@@ -418,8 +422,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 	wClass.cbSize = sizeof(WNDCLASSEX); 
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW; 
 	wClass.hCursor = LoadCursor(NULL, IDC_ARROW); 
-	wClass.hIcon = NULL;     
-	wClass.hIconSm = NULL;	
+	wClass.hIcon = NULL;
+	wClass.hIconSm = NULL;
 	wClass.hInstance = hInstance; 
 	wClass.lpfnWndProc = (WNDPROC)WinProc; 
 	wClass.lpszClassName = "Window Class"; 
