@@ -1,6 +1,8 @@
 #include <Windows.h>
 #include <stdio.h>
 
+#pragma warning(disable : 4996)
+
 #define BTN_ARIT 101
 #define BTN_COMP 102
 #define EDT_MATRIX1 103
