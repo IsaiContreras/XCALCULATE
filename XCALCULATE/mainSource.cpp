@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <stdio.h>
+#include <math.h>
 
 #pragma warning(disable : 4996)
 
@@ -31,6 +32,10 @@
 #define BTN_ROTAT 126
 #define BTN_SCALA 127
 #define BTN_CALCULATE 128
+
+#define PI 3.1416
+#define TO_DEG(A) A*(180/PI)
+#define TO_RAD(A) A*(PI/180)
 
 HWND hBtnArit;
 HWND hBtnComp;
@@ -80,6 +85,9 @@ HWND hStS2;
 HWND hStS3;
 HWND hStP;
 HWND hStRP;
+
+float compositeMatrix[4][4] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+bool init = true;
 
 class Matrix {
 	float** matrix = NULL;
@@ -147,13 +155,11 @@ public:
 			r[i] = new float[n];
 		float** m1 = this->matrix;
 		float** m2 = mat2.matrix;
-		float acum = 0;
 		for (short y = 0; y < n; y++) {
 			for (short x = 0; x < m; x++) {
-				acum = 0;
-				for (short z = 0; z < b; z++) {
-					acum = acum + (m1[z][y] * m2[x][z]);
-				}
+				float acum = 0;
+				for (short z = 0; z < b; z++) 
+					acum += m1[z][y] * m2[x][z];
 				r[x][y] = acum;
 			}
 		}
@@ -167,11 +173,11 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hStA1 = CreateWindow(
 		"STATIC",
 		"Matriz 1",
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
-		80, 40, 100, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		WS_CHILD | WS_VISIBLE | ES_CENTER,
+		10, 40, 250, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtMatrix1 = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
 		10, 60, 250, 200,
@@ -180,11 +186,11 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hStA2 = CreateWindow(
 		"STATIC",
 		"Matriz 2",
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
-		440, 40, 100, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		WS_CHILD | WS_VISIBLE | ES_CENTER,
+		365, 40, 250, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtMatrix2 = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
 		365, 60, 250, 200,
@@ -193,43 +199,36 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hStA3 = CreateWindow(
 		"STATIC",
 		"Matriz Resultante",
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
-		240, 270, 160, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		WS_CHILD | WS_VISIBLE | ES_CENTER,
+		195, 270, 250, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtMatrix3 = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_STATICEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
 		195, 290, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnAdd = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"+",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		260, 60, 105, 66,
 		hWindow, (HMENU)BTN_ADD, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnSub = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"-",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		260, 126, 105, 66,
 		hWindow, (HMENU)BTN_SUB, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnMult = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"x",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		260, 192, 105, 66,
 		hWindow, (HMENU)BTN_MULT, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
-	);
-	hBtnClean = CreateWindowEx(
-		0, "BUTTON",
-		"Limpiar Cuadros",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-		465, 10, 150, 25,
-		hWindow, (HMENU)BTN_CLEAN, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 }
 void DestroyAritmeticMenu() {
@@ -254,14 +253,14 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		10, 40, 350, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtCompMatrix = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_STATICEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_READONLY,
 		10, 60, 350, 175,
 		hWindow, (HMENU)EDT_MATRIXC, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnRestart = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"Reiniciar Matriz",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		10, 240, 350, 25,
@@ -274,28 +273,28 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		10, 280, 100, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtTX = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		10, 300, 86, 25,
 		hWindow, (HMENU)EDT_TX, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtTY = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		98, 300, 86, 25,
 		hWindow, (HMENU)EDT_TY, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtTZ = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		186, 300, 86, 25,
 		hWindow, (HMENU)EDT_TZ, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnTrans = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"Aplicar",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		274, 300, 86, 25,
@@ -326,28 +325,28 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		10, 350, 100, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtRX = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		10, 370, 86, 25,
 		hWindow, (HMENU)EDT_RX, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtRY = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		98, 370, 86, 25,
 		hWindow, (HMENU)EDT_RY, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtRZ = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		186, 370, 86, 25,
 		hWindow, (HMENU)EDT_RZ, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnRotat = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"Aplicar",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		274, 370, 86, 25,
@@ -378,28 +377,28 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		10, 420, 100, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtSX = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		10, 440, 86, 25,
 		hWindow, (HMENU)EDT_SX, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtSY = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		98, 440, 86, 25,
 		hWindow, (HMENU)EDT_SY, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtSZ = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | ES_LEFT,
 		186, 440, 86, 25,
 		hWindow, (HMENU)EDT_SZ, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnScala = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"Aplicar",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		274, 440, 86, 25,
@@ -430,21 +429,21 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		370, 40, 240, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hLbxPoints = CreateWindowEx(
-		0, "LISTBOX",
+		WS_EX_CLIENTEDGE, "LISTBOX",
 		NULL,
 		LBS_DISABLENOSCROLL | LBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
 		370, 60, 240, 180,
 		hWindow, (HMENU)LBX_POINTS, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnAddP = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"Agregar",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		370, 240, 120, 25,
 		hWindow, (HMENU)BTN_ADDP, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnDelP = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"Borrar",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		490, 240, 120, 25,
@@ -457,14 +456,14 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		370, 280, 240, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnCalculate = CreateWindowEx(
-		0, "BUTTON",
+		WS_EX_CLIENTEDGE, "BUTTON",
 		"Calcular Puntos",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		370, 300, 240, 25,
 		hWindow, (HMENU)BTN_CALCULATE, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtRPoints = CreateWindowEx(
-		0, "EDIT",
+		WS_EX_STATICEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_READONLY,
 		370, 325, 240, 205,
@@ -512,11 +511,9 @@ void DestroyCompositeMatrixMenu() {
 }
 
 void initializeMatrix(float** mat, short columns, short rows) {
-	for (short x = 0; x < columns; x++) {
-		for (short y = 0; y < rows; y++) {
+	for (short x = 0; x < columns; x++) 
+		for (short y = 0; y < rows; y++)
 			mat[x][y] = 0;
-		}
-	}
 }
 bool validMatrix(char* string) {
 	while (*string != NULL) {
@@ -605,6 +602,135 @@ Matrix* buildMatrix(HWND hWindow) {
 	return r;
 }
 
+void restartCompositeMatrix() {
+	for (short y = 0; y < 4; y++)
+		for (short x = 0; x < 4; x++)
+			compositeMatrix[y][x] = 0;
+}
+void printCompositeMatrix() {
+
+}
+bool validString(char* string) {
+	while (*string != NULL) {
+		if (!((*string > 47 & *string < 58) | (*string == 43 | *string == 45 | *string == 46)))
+			return false;
+		string++;
+	}
+	return true;
+}
+void translate(float x, float y, float z) {
+	float tras[4][4] = { 1, 0, 0, x, 0, 1, 0, y, 0, 0, 1, z, 0, 0, 0, 1 };
+	if (init) {
+		for (short j = 0; j < 4; j++)
+			for (short i = 0; i < 4; i++)
+				compositeMatrix[j][i] = tras[j][i];
+		init = false;
+		return;
+	}
+	float result[4][4];
+	for (short j = 0; j < 4; j++) {
+		for (short i = 0; i < 4; i++) {
+			float acum = 0;
+			for (short k = 0; k < 4; k++)
+				acum += compositeMatrix[k][j] * tras[i][k];
+			result[j][i] = acum;
+		}
+	}
+	for (short j = 0; j < 4; j++)
+		for (short i = 0; i < 4; i++)
+			compositeMatrix[j][i] = result[j][i];
+}
+void rotate(float x, float y, float z) {
+	if (x != 0) {
+		float rotx[4][4] = { 1, 0, 0, 0, 0, cos(TO_RAD(x)), -(sin(TO_RAD(x))), 0, 0, sin(TO_RAD(x)), cos(TO_RAD(x)), 0, 0, 0, 0, 1 };
+		if (init) {
+			for (short j = 0; j < 4; j++)
+				for (short i = 0; i < 4; i++)
+					compositeMatrix[j][i] = rotx[j][i];
+			init = false;
+			return;
+		}
+		float result[4][4];
+		for (short j = 0; j < 4; j++) {
+			for (short i = 0; i < 4; i++) {
+				float acum = 0;
+				for (short k = 0; k < 4; k++)
+					acum += compositeMatrix[k][j] * rotx[i][k];
+				result[j][i] = acum;
+			}
+		}
+		for (short j = 0; j < 4; j++)
+			for (short i = 0; i < 4; i++)
+				compositeMatrix[j][i] = result[j][i];
+	}
+	else if (y != 0) {
+		float roty[4][4] = { cos(TO_RAD(y)), 0, sin(TO_RAD(y)), 0, 0, 1, 0, 0, -(sin(TO_RAD(y))), 0, cos(TO_RAD(y)), 0, 0, 0, 0, 1 };
+		if (init) {
+			for (short j = 0; j < 4; j++)
+				for (short i = 0; i < 4; i++)
+					compositeMatrix[j][i] = roty[j][i];
+			init = false;
+			return;
+		}
+		float result[4][4];
+		for (short j = 0; j < 4; j++) {
+			for (short i = 0; i < 4; i++) {
+				float acum = 0;
+				for (short k = 0; k < 4; k++)
+					acum += compositeMatrix[k][j] * roty[i][k];
+				result[j][i] = acum;
+			}
+		}
+		for (short j = 0; j < 4; j++)
+			for (short i = 0; i < 4; i++)
+				compositeMatrix[j][i] = result[j][i];
+	}
+	else {
+		float rotz[4][4] = { cos(TO_RAD(z)), -(sin(TO_RAD(z))), 0, 0, sin(TO_RAD(z)), cos(TO_RAD(z)), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		if (init) {
+			for (short j = 0; j < 4; j++)
+				for (short i = 0; i < 4; i++)
+					compositeMatrix[j][i] = rotz[j][i];
+			init = false;
+			return;
+		}
+		float result[4][4];
+		for (short j = 0; j < 4; j++) {
+			for (short i = 0; i < 4; i++) {
+				float acum = 0;
+				for (short k = 0; k < 4; k++)
+					acum += compositeMatrix[k][j] * rotz[i][k];
+				result[j][i] = acum;
+			}
+		}
+		for (short j = 0; j < 4; j++)
+			for (short i = 0; i < 4; i++)
+				compositeMatrix[j][i] = result[j][i];
+	}
+}
+void scale(float x, float y, float z) {
+	float scale[4][4] = { x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1 };
+	if (init) {
+		for (short j = 0; j < 4; j++)
+			for (short i = 0; i < 4; i++)
+				compositeMatrix[j][i] = scale[j][i];
+		init = false;
+		return;
+	}
+	float result[4][4];
+	for (short j = 0; j < 4; j++) {
+		for (short i = 0; i < 4; i++) {
+			float acum = 0;
+			for (short k = 0; k < 4; k++)
+				acum += compositeMatrix[k][j] * scale[i][k];
+			result[j][i] = acum;
+		}
+	}
+	for (short j = 0; j < 4; j++)
+		for (short i = 0; i < 4; i++)
+			compositeMatrix[j][i] = result[j][i];
+}
+
 LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 	case WM_CREATE: {
@@ -621,6 +747,13 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 			165, 10, 150, 25,
 			hWnd, (HMENU)BTN_COMP, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+		);
+		hBtnClean = CreateWindowEx(
+			0, "BUTTON",
+			"Limpiar Cuadros",
+			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+			465, 10, 150, 25,
+			hWnd, (HMENU)BTN_CLEAN, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
 		);
 		CreateAritmeticMenu(hWnd);
 		break;
@@ -682,7 +815,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			delete matrix2;
 			break;
 		}
-		case BTN_MULT:
+		case BTN_MULT: {
 			Matrix* matrix1 = buildMatrix(hEdtMatrix1);
 			if (matrix1 == NULL) {
 				MessageBox(hWnd, "La matriz 1 contiene caracteres invalidos o esta vacía.", "No se pudo capturar la matriz", MB_ICONEXCLAMATION);
@@ -703,7 +836,8 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			delete matrix2;
 			break;
 		}
-		break;
+		}
+
 	}
 	case WM_GETMINMAXINFO: {
 		LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
