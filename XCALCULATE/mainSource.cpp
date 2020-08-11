@@ -4,6 +4,7 @@
 
 #pragma warning(disable : 4996)
 
+#pragma region DEFINICIONES
 #define BTN_ARIT 101
 #define BTN_COMP 102
 #define EDT_MATRIX1 103
@@ -36,7 +37,9 @@
 #define PI 3.1416
 #define TO_DEG(A) A*(180/PI)
 #define TO_RAD(A) A*(PI/180)
+#pragma endregion
 
+#pragma region HANDLERS
 HWND hBtnArit;
 HWND hBtnComp;
 //AritmeticMenu
@@ -85,10 +88,14 @@ HWND hStS2;
 HWND hStS3;
 HWND hStP;
 HWND hStRP;
+#pragma endregion
 
+#pragma region VARIABLES GLOBALES
 float compositeMatrix[4][4] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 bool init = true;
+#pragma endregion
 
+#pragma region CLASES
 class Matrix {
 	float** matrix = NULL;
 	short columns;
@@ -167,7 +174,9 @@ public:
 		return ret;
 	}
 };
+#pragma endregion
 
+#pragma region CONSTRUCTORES VENTANAS
 void CreateAritmeticMenu(HWND hWindow) {
 	EnableWindow(hBtnArit, false); EnableWindow(hBtnComp, true);
 	hStA1 = CreateWindow(
@@ -243,7 +252,6 @@ void DestroyAritmeticMenu() {
 	DestroyWindow(hBtnMult);
 	hEdtMatrix1 = hEdtMatrix2 = hEdtMatrix3 = hBtnAdd = hBtnSub = hBtnMult = NULL;
 }
-
 void CreateCompositeMatrixMenu(HWND hWindow) {
 	EnableWindow(hBtnComp, false); EnableWindow(hBtnArit, true);
 	hStM = CreateWindow(
@@ -255,7 +263,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hEdtCompMatrix = CreateWindowEx(
 		WS_EX_STATICEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_READONLY,
+		WS_CHILD | WS_VISIBLE | ES_CENTER | ES_MULTILINE | ES_READONLY,
 		10, 60, 350, 175,
 		hWindow, (HMENU)EDT_MATRIXC, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -509,7 +517,9 @@ void DestroyCompositeMatrixMenu() {
 	hStS = hEdtSX = hEdtSY = hEdtSZ = hBtnScala = hStS1 = hStS2 = hStS3 = NULL;
 	hStP = hLbxPoints = hBtnAddP = hBtnDelP = hStRP = hBtnCalculate = hEdtRPoints = NULL;
 }
+#pragma endregion
 
+#pragma region ARITMETICAS
 void initializeMatrix(float** mat, short columns, short rows) {
 	for (short x = 0; x < columns; x++) 
 		for (short y = 0; y < rows; y++)
@@ -563,7 +573,7 @@ void printMatrixOnWindow(HWND hWindow, Matrix* matrix) {
 	float** pMatrix = matrix->getMatrix();
 	for (short y = 0; y < matrix->getRows(); y++) {
 		for (short x = 0; x < matrix->getColumns(); x++) {
-			sprintf(mat, "%.2f",pMatrix[x][y]);
+			sprintf(mat, "%.2f", pMatrix[x][y]);
 			strcat(buff, mat); strcat(buff, "   ");
 		}
 		strcat(buff, "\r\n\r\n");
@@ -601,14 +611,27 @@ Matrix* buildMatrix(HWND hWindow) {
 	Matrix *r = new Matrix(matrix, m, n);
 	return r;
 }
+#pragma endregion
 
+#pragma region COMPUESTAS
+void printCompositeMatrix() {
+	char buff[MAX_PATH] = "\r\n\r\n";
+	char mat[30];
+	for (short y = 0; y < 4; y++) {
+		for (short x = 0; x < 4; x++) {
+			sprintf(mat, "%.4f", compositeMatrix[y][x]);
+			strcat(buff, mat); strcat(buff, "   ");
+		}
+		strcat(buff, "\r\n\r\n");
+	}
+	SetWindowText(hEdtCompMatrix, buff);
+}
 void restartCompositeMatrix() {
 	for (short y = 0; y < 4; y++)
 		for (short x = 0; x < 4; x++)
 			compositeMatrix[y][x] = 0;
-}
-void printCompositeMatrix() {
-
+	init = true;
+	printCompositeMatrix();
 }
 bool validString(char* string) {
 	while (*string != NULL) {
@@ -632,7 +655,7 @@ void translate(float x, float y, float z) {
 		for (short i = 0; i < 4; i++) {
 			float acum = 0;
 			for (short k = 0; k < 4; k++)
-				acum += compositeMatrix[k][j] * tras[i][k];
+				acum += compositeMatrix[j][k] * tras[k][i];
 			result[j][i] = acum;
 		}
 	}
@@ -677,7 +700,7 @@ void rotate(float x, float y, float z) {
 			for (short i = 0; i < 4; i++) {
 				float acum = 0;
 				for (short k = 0; k < 4; k++)
-					acum += compositeMatrix[k][j] * roty[i][k];
+					acum += compositeMatrix[j][k] * roty[k][i];
 				result[j][i] = acum;
 			}
 		}
@@ -722,7 +745,7 @@ void scale(float x, float y, float z) {
 		for (short i = 0; i < 4; i++) {
 			float acum = 0;
 			for (short k = 0; k < 4; k++)
-				acum += compositeMatrix[k][j] * scale[i][k];
+				acum += compositeMatrix[j][k] * scale[k][i];
 			result[j][i] = acum;
 		}
 	}
@@ -730,6 +753,7 @@ void scale(float x, float y, float z) {
 		for (short i = 0; i < 4; i++)
 			compositeMatrix[j][i] = result[j][i];
 }
+#pragma endregion
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
@@ -767,6 +791,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_COMP:
 			DestroyAritmeticMenu();
 			CreateCompositeMatrixMenu(hWnd);
+			printCompositeMatrix();
 			break;
 		case BTN_CLEAN:
 			SetWindowText(hEdtMatrix1, "");
@@ -836,8 +861,98 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			delete matrix2;
 			break;
 		}
+		case BTN_RESTART:
+			restartCompositeMatrix();
+			break;
+		case BTN_TRANS: {
+			char buff[30];
+			float x = 0, y = 0, z = 0;
+			int length = GetWindowTextLength(hEdtTX);
+			if (length > 0) {
+				GetWindowText(hEdtTX, buff, length + 1);
+				sscanf(buff, "%f", &x);
+			}
+			length = GetWindowTextLength(hEdtTY);
+			if (length > 0) {
+				GetWindowText(hEdtTY, buff, length + 1);
+				sscanf(buff, "%f", &y);
+			}
+			length = GetWindowTextLength(hEdtTZ);
+			if (length > 0) {
+				GetWindowText(hEdtTZ, buff, length + 1);
+				sscanf(buff, "%f", &z);
+			}
+			translate(x, y, z);
+			printCompositeMatrix();
+			SetWindowText(hEdtTX, "");
+			SetWindowText(hEdtTY, "");
+			SetWindowText(hEdtTZ, "");
+			break;
 		}
-
+		case BTN_ROTAT: {
+			char buff[30];
+			float x = 0, y = 0, z = 0;
+			int length = GetWindowTextLength(hEdtRX);
+			if (length > 0) {
+				GetWindowText(hEdtRX, buff, length + 1);
+				sscanf(buff, "%f", &x);
+			}
+			length = GetWindowTextLength(hEdtRY);
+			if (length > 0) {
+				GetWindowText(hEdtRY, buff, length + 1);
+				sscanf(buff, "%f", &y);
+			}
+			length = GetWindowTextLength(hEdtRZ);
+			if (length > 0) {
+				GetWindowText(hEdtRZ, buff, length + 1);
+				sscanf(buff, "%f", &z);
+			}
+			rotate(x, y, z);
+			printCompositeMatrix();
+			SetWindowText(hEdtRX, "");
+			SetWindowText(hEdtRY, "");
+			SetWindowText(hEdtRZ, "");
+			break;
+		}
+		case BTN_SCALA: {
+			char buff[30];
+			float x = 0, y = 0, z = 0;
+			int length = GetWindowTextLength(hEdtSX);
+			if (length > 0) {
+				GetWindowText(hEdtSX, buff, length + 1);
+				sscanf(buff, "%f", &x);
+			}
+			length = GetWindowTextLength(hEdtSY);
+			if (length > 0) {
+				GetWindowText(hEdtSY, buff, length + 1);
+				sscanf(buff, "%f", &y);
+			}
+			length = GetWindowTextLength(hEdtSZ);
+			if (length > 0) {
+				GetWindowText(hEdtSZ, buff, length + 1);
+				sscanf(buff, "%f", &z);
+			}
+			scale(x, y, z);
+			printCompositeMatrix();
+			SetWindowText(hEdtSX, "");
+			SetWindowText(hEdtSY, "");
+			SetWindowText(hEdtSZ, "");
+			break;
+		}
+		}
+		if (LOWORD(wParam) == EDT_RX & HIWORD(wParam) == EN_SETFOCUS) {
+			SetWindowText(hEdtRY, "");
+			SetWindowText(hEdtRZ, "");
+		}
+		if (LOWORD(wParam) == EDT_RY & HIWORD(wParam) == EN_SETFOCUS) {
+			SetWindowText(hEdtRX, "");
+			SetWindowText(hEdtRZ, "");
+		}
+		if (LOWORD(wParam) == EDT_RZ & HIWORD(wParam) == EN_SETFOCUS) {
+			SetWindowText(hEdtRX, "");
+			SetWindowText(hEdtRY, "");
+		}
+		break;
 	}
 	case WM_GETMINMAXINFO: {
 		LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
