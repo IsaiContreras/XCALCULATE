@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <math.h>
+#include "linkedList.h"
 
 #pragma warning(disable : 4996)
 
@@ -183,6 +184,24 @@ public:
 		return ret;
 	}
 };
+
+class Point {
+	char id[10];
+	int num;
+	float x, xR;
+	float y, yR;
+	float z, zR;
+	Point* prev;
+	Point* next;
+public:
+	char* print() {
+		char print[50];
+		sprintf(print, "P%d (%.4f, %.4f, %.4f)", num, x, y, z);
+		return print;
+	}
+};
+
+LinkedList<Point> listPoints;
 #pragma endregion
 
 #pragma region CONSTRUCTORES VENTANAS
