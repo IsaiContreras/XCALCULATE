@@ -24,15 +24,18 @@
 #define EDT_SX 117
 #define EDT_SY 118
 #define EDT_SZ 119
-#define EDT_RPOINTS 120
-#define LBX_POINTS 121
-#define BTN_RESTART 122
-#define BTN_ADDP 123
-#define BTN_DELP 124
-#define BTN_TRANS 125
-#define BTN_ROTAT 126
-#define BTN_SCALA 127
-#define BTN_CALCULATE 128
+#define EDT_PX 120
+#define EDT_PY 121
+#define EDT_PZ 122
+#define EDT_RPOINTS 123
+#define LBX_POINTS 124
+#define BTN_RESTART 125
+#define BTN_TRANS 126
+#define BTN_ROTAT 127
+#define BTN_SCALA 128
+#define BTN_ADDP 129
+#define BTN_DELP 130
+#define BTN_CALCULATE 131
 
 #define PI 3.1416
 #define TO_DEG(A) A*(180/PI)
@@ -64,6 +67,9 @@ HWND hEdtRZ;
 HWND hEdtSX;
 HWND hEdtSY;
 HWND hEdtSZ;
+HWND hEdtPX;
+HWND hEdtPY;
+HWND hEdtPZ;
 HWND hEdtRPoints;
 HWND hLbxPoints;
 HWND hBtnRestart;
@@ -87,6 +93,9 @@ HWND hStS1;
 HWND hStS2;
 HWND hStS3;
 HWND hStP;
+HWND hStP1;
+HWND hStP2;
+HWND hStP3;
 HWND hStRP;
 #pragma endregion
 
@@ -188,7 +197,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hEdtMatrix1 = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
 		10, 60, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -201,7 +210,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hEdtMatrix2 = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
 		365, 60, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -283,21 +292,21 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hEdtTX = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP | ES_LEFT,
 		10, 300, 86, 25,
 		hWindow, (HMENU)EDT_TX, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtTY = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		98, 300, 86, 25,
 		hWindow, (HMENU)EDT_TY, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtTZ = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		186, 300, 86, 25,
 		hWindow, (HMENU)EDT_TZ, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -335,21 +344,21 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hEdtRX = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		10, 370, 86, 25,
 		hWindow, (HMENU)EDT_RX, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtRY = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		98, 370, 86, 25,
 		hWindow, (HMENU)EDT_RY, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtRZ = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		186, 370, 86, 25,
 		hWindow, (HMENU)EDT_RZ, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -387,21 +396,21 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hEdtSX = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		10, 440, 86, 25,
 		hWindow, (HMENU)EDT_SX, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtSY = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		98, 440, 86, 25,
 		hWindow, (HMENU)EDT_SY, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtSZ = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | ES_LEFT,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
 		186, 440, 86, 25,
 		hWindow, (HMENU)EDT_SZ, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -440,8 +449,47 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		WS_EX_CLIENTEDGE, "LISTBOX",
 		NULL,
 		LBS_DISABLENOSCROLL | LBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
-		370, 60, 240, 180,
+		370, 60, 240, 140,
 		hWindow, (HMENU)LBX_POINTS, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hEdtPX = CreateWindowEx(
+		WS_EX_CLIENTEDGE, "EDIT",
+		NULL,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
+		370, 215, 80, 25,
+		hWindow, (HMENU)EDT_PX, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hEdtPY = CreateWindowEx(
+		WS_EX_CLIENTEDGE, "EDIT",
+		NULL,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
+		450, 215, 80, 25,
+		hWindow, (HMENU)EDT_PY, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hEdtPZ = CreateWindowEx(
+		WS_EX_CLIENTEDGE, "EDIT",
+		NULL,
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT,
+		530, 215, 80, 25,
+		hWindow, (HMENU)EDT_PZ, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hStP1 = CreateWindow(
+		"STATIC",
+		"x",
+		WS_CHILD | WS_VISIBLE | ES_CENTER,
+		370, 195, 80, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hStP2 = CreateWindow(
+		"STATIC",
+		"y",
+		WS_CHILD | WS_VISIBLE | ES_CENTER,
+		450, 195, 80, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hStP3 = CreateWindow(
+		"STATIC",
+		"z",
+		WS_CHILD | WS_VISIBLE | ES_CENTER,
+		530, 195, 80, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnAddP = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
@@ -507,15 +555,22 @@ void DestroyCompositeMatrixMenu() {
 	DestroyWindow(hStS2);
 	DestroyWindow(hStS3);
 	DestroyWindow(hLbxPoints);
+	DestroyWindow(hEdtPX);
+	DestroyWindow(hEdtPY);
+	DestroyWindow(hEdtPZ);
 	DestroyWindow(hBtnAddP);
 	DestroyWindow(hBtnDelP);
+	DestroyWindow(hStP);
+	DestroyWindow(hStP1);
+	DestroyWindow(hStP2);
+	DestroyWindow(hStP3);
 	DestroyWindow(hStRP);
 	DestroyWindow(hBtnCalculate);
 	DestroyWindow(hEdtRPoints);
 	hStM = hEdtCompMatrix = hBtnRestart = hStT = hEdtTX = hEdtTY = hEdtTZ = hBtnTrans = hStT1 = hStT2 = hStT3 = NULL;
 	hStR = hEdtRX = hEdtRY = hEdtRZ = hBtnRotat = hStR1 = hStR2 = hStR3 = NULL;
 	hStS = hEdtSX = hEdtSY = hEdtSZ = hBtnScala = hStS1 = hStS2 = hStS3 = NULL;
-	hStP = hLbxPoints = hBtnAddP = hBtnDelP = hStRP = hBtnCalculate = hEdtRPoints = NULL;
+	hStP = hLbxPoints = hEdtPX = hEdtPY = hEdtPZ = hBtnAddP = hBtnDelP = hStP = hStP1 = hStP2 = hStP3 = hStRP = hBtnCalculate = hEdtRPoints = NULL;
 }
 #pragma endregion
 
@@ -708,7 +763,7 @@ void rotate(float x, float y, float z) {
 			for (short i = 0; i < 4; i++)
 				compositeMatrix[j][i] = result[j][i];
 	}
-	else {
+	else if (z != 0) {
 		float rotz[4][4] = { cos(TO_RAD(z)), -(sin(TO_RAD(z))), 0, 0, sin(TO_RAD(z)), cos(TO_RAD(z)), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 		if (init) {
 			for (short j = 0; j < 4; j++)
@@ -867,19 +922,20 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_TRANS: {
 			char buff[30];
 			float x = 0, y = 0, z = 0;
-			int length = GetWindowTextLength(hEdtTX);
-			if (length > 0) {
-				GetWindowText(hEdtTX, buff, length + 1);
+			short lengthX = GetWindowTextLength(hEdtTX);
+			short lengthY = GetWindowTextLength(hEdtTY);
+			short lengthZ = GetWindowTextLength(hEdtTZ);
+			if (lengthX == 0 & lengthY == 0 & lengthZ == 0) break;
+			if (lengthX > 0) {
+				GetWindowText(hEdtTX, buff, lengthX + 1);
 				sscanf(buff, "%f", &x);
 			}
-			length = GetWindowTextLength(hEdtTY);
-			if (length > 0) {
-				GetWindowText(hEdtTY, buff, length + 1);
+			if (lengthY > 0) {
+				GetWindowText(hEdtTY, buff, lengthX + 1);
 				sscanf(buff, "%f", &y);
 			}
-			length = GetWindowTextLength(hEdtTZ);
-			if (length > 0) {
-				GetWindowText(hEdtTZ, buff, length + 1);
+			if (lengthZ > 0) {
+				GetWindowText(hEdtTZ, buff, lengthX + 1);
 				sscanf(buff, "%f", &z);
 			}
 			translate(x, y, z);
@@ -917,19 +973,20 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_SCALA: {
 			char buff[30];
 			float x = 0, y = 0, z = 0;
-			int length = GetWindowTextLength(hEdtSX);
-			if (length > 0) {
-				GetWindowText(hEdtSX, buff, length + 1);
+			short lengthX = GetWindowTextLength(hEdtSX);
+			short lengthY = GetWindowTextLength(hEdtSY);
+			short lengthZ = GetWindowTextLength(hEdtSZ);
+			if (lengthX == 0 & lengthY == 0 & lengthZ == 0) break;
+			if (lengthX > 0) {
+				GetWindowText(hEdtSX, buff, lengthX + 1);
 				sscanf(buff, "%f", &x);
 			}
-			length = GetWindowTextLength(hEdtSY);
-			if (length > 0) {
-				GetWindowText(hEdtSY, buff, length + 1);
+			if (lengthY > 0) {
+				GetWindowText(hEdtSY, buff, lengthX + 1);
 				sscanf(buff, "%f", &y);
 			}
-			length = GetWindowTextLength(hEdtSZ);
-			if (length > 0) {
-				GetWindowText(hEdtSZ, buff, length + 1);
+			if (lengthZ > 0) {
+				GetWindowText(hEdtSZ, buff, lengthX + 1);
 				sscanf(buff, "%f", &z);
 			}
 			scale(x, y, z);
