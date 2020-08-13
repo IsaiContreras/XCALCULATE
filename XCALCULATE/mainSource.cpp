@@ -920,6 +920,10 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			SetWindowText(hEdtMatrix1, "");
 			SetWindowText(hEdtMatrix2, "");
 			SetWindowText(hEdtMatrix3, "");
+			restartCompositeMatrix();
+			listPoints.EraseList();
+			SendMessage(hLbxPoints, LB_RESETCONTENT, 0, 0);
+			SetWindowText(hEdtRPoints, "");
 			break;
 		case BTN_ADD: {
 			Matrix* matrix1 = buildMatrix(hEdtMatrix1);
@@ -1110,10 +1114,6 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_ADDP: {
 			Point temp;
 			char buff[30];
-			counter++;
-			snprintf(buff, 30, "P%d", counter);
-			strcpy(temp.id, buff);
-			temp.num = counter;
 			short lengthX = GetWindowTextLength(hEdtPX);
 			short lengthY = GetWindowTextLength(hEdtPY);
 			short lengthZ = GetWindowTextLength(hEdtPZ);
@@ -1142,6 +1142,10 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				}
 				sscanf(buff, "%f", &temp.z);
 			}
+			counter++;
+			snprintf(buff, 30, "P%d", counter);
+			strcpy(temp.id, buff);
+			temp.num = counter;
 			listPoints.AddNode(temp);
 			listPoints.PrintOnWindow(hLbxPoints, 0);
 			SetWindowText(hEdtPX, "");
@@ -1165,13 +1169,16 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		}
 		case BTN_CLEANLIST:
 			listPoints.EraseList();
-			listPoints.PrintOnWindow(hLbxPoints, 0);
+			SendMessage(hLbxPoints, LB_RESETCONTENT, 0, 0);
 			counter = 0;
 			break;
-		case BTN_CALCULATE: {
+		case BTN_CALCULATE:
+			if (init) {
+				MessageBox(hWnd, "No se puede realizar el calculo. La matriz aún no ha sido transformada.", "Matriz Inicializada", MB_ICONEXCLAMATION);
+				break;
+			}
 			resultPoints<Point>();
 			break;
-		}
 		}
 		break;
 	}
