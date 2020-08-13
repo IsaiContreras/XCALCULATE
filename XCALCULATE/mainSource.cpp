@@ -965,14 +965,26 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (lengthX == 0 & lengthY == 0 & lengthZ == 0) break;
 			if (lengthX > 0) {
 				GetWindowText(hEdtTX, buff, lengthX + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &x);
 			}
 			if (lengthY > 0) {
 				GetWindowText(hEdtTY, buff, lengthY + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &y);
 			}
 			if (lengthZ > 0) {
 				GetWindowText(hEdtTZ, buff, lengthZ + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &z);
 			}
 			translate(x, y, z);
@@ -995,16 +1007,28 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					}
 					else {
 						GetWindowText(hEdtRX, buff, lengthX + 1);
+						if (!validString(buff)) {
+							MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+							break;
+						}
 						sscanf(buff, "%f", &x);
 					}
 				}
 				else {
 					GetWindowText(hEdtRY, buff, lengthY + 1);
+					if (!validString(buff)) {
+						MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+						break;
+					}
 					sscanf(buff, "%f", &y);
 				}
 			}
 			else {
 				GetWindowText(hEdtRZ, buff, lengthZ + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &z);
 			}
 			rotate(x, y, z);
@@ -1023,14 +1047,26 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (lengthX == 0 & lengthY == 0 & lengthZ == 0) break;
 			if (lengthX > 0) {
 				GetWindowText(hEdtSX, buff, lengthX + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &x);
 			}
 			if (lengthY > 0) {
 				GetWindowText(hEdtSY, buff, lengthY + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &y);
 			}
 			if (lengthZ > 0) {
 				GetWindowText(hEdtSZ, buff, lengthZ + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &z);
 			}
 			scale(x, y, z);
@@ -1053,14 +1089,26 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			if (lengthX == 0 & lengthY == 0 & lengthZ == 0) break;
 			if (lengthX > 0) {
 				GetWindowText(hEdtPX, buff, lengthX + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &temp.x);
 			}
 			if (lengthY > 0) {
 				GetWindowText(hEdtPY, buff, lengthY + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &temp.y);
 			}
 			if (lengthZ > 0) {
 				GetWindowText(hEdtPZ, buff, lengthZ + 1);
+				if (!validString(buff)) {
+					MessageBox(hWnd, "Solo puede ingresar números y signos de puntuación.", "Caracteres inválidos", MB_ICONEXCLAMATION);
+					break;
+				}
 				sscanf(buff, "%f", &temp.z);
 			}
 			listPoints.AddNode(temp);
