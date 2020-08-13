@@ -12,6 +12,8 @@ public:
 	Node(T);
 	T getData() { return this->data; }
 	void setData(T data) { this->data = data; }
+	Node* getNext() { return next; }
+	Node* getPrev() { return prev; }
 	char *callPrint();
 };
 template <typename T> Node<T>::Node(T data) {

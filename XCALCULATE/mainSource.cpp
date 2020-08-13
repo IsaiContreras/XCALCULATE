@@ -205,6 +205,11 @@ public:
 		sprintf(print, "P%d (%.4f, %.4f, %.4f)", num, x, y, z);
 		return print;
 	}
+	char* printR() {
+		char print[50];
+		sprintf(print, "P%d (%.4f, %.4f, %.4f)", num, xR, yR, zR);
+		return print;
+	}
 	bool operator==(char* idComp) {
 		if (strcmp(this->id, idComp) == 0)
 			return true;
@@ -558,7 +563,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hEdtRPoints = CreateWindowEx(
 		WS_EX_STATICEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_READONLY,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_READONLY,
 		370, 325, 240, 205,
 		hWindow, (HMENU)EDT_RPOINTS, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -844,6 +849,32 @@ void scale(float x, float y, float z) {
 	for (short j = 0; j < 4; j++)
 		for (short i = 0; i < 4; i++)
 			compositeMatrix[j][i] = result[j][i];
+}
+template <typename T> void resultPoints() {
+	Node<T>* aux = listPoints.getFirst();
+	while (aux != NULL) {
+		Point temp = aux->getData();
+		float point[4] = {temp.x, temp.y, temp.z, 1};
+		float result[4];
+		for (short j = 0; j < 4; j++) {
+			float acum = 0;
+			for (short k = 0; k < 4; k++)
+				acum += compositeMatrix[j][k] * point[k];
+			result[j] = acum;
+		}
+		temp.xR = result[0];
+		temp.yR = result[1];
+		temp.zR = result[2];
+		aux->setData(temp);
+		aux = aux->getNext();
+	}
+	aux = listPoints.getFirst();
+	char buff[450] = "";
+	while (aux != NULL) {
+		strcat(buff, aux->getData().printR()); strcat(buff, "\r\n\r\n");
+		aux = aux->getNext();
+	}
+	SetWindowText(hEdtRPoints, buff);
 }
 #pragma endregion
 
@@ -1136,6 +1167,11 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			listPoints.EraseList();
 			listPoints.PrintOnWindow(hLbxPoints, 0);
 			counter = 0;
+			break;
+		case BTN_CALCULATE: {
+			resultPoints<Point>();
+			break;
+		}
 		}
 		break;
 	}
