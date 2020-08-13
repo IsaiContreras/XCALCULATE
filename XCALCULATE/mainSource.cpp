@@ -34,9 +34,10 @@
 #define BTN_TRANS 126
 #define BTN_ROTAT 127
 #define BTN_SCALA 128
-#define BTN_ADDP 129
-#define BTN_DELP 130
-#define BTN_CALCULATE 131
+#define BTN_CLEANLIST 129
+#define BTN_ADDP 130
+#define BTN_DELP 131
+#define BTN_CALCULATE 132
 
 #define PI 3.1416
 #define TO_DEG(A) A*(180/PI)
@@ -74,6 +75,7 @@ HWND hEdtPZ;
 HWND hEdtRPoints;
 HWND hLbxPoints;
 HWND hBtnRestart;
+HWND hBtnCleanList;
 HWND hBtnAddP;
 HWND hBtnDelP;
 HWND hBtnTrans;
@@ -103,6 +105,7 @@ HWND hStRP;
 #pragma region VARIABLES GLOBALES
 float compositeMatrix[4][4] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 bool init = true;
+int counter = 0;
 #pragma endregion
 
 #pragma region CLASES
@@ -186,18 +189,26 @@ public:
 };
 
 class Point {
+public:
 	char id[10];
 	int num;
 	float x, xR;
 	float y, yR;
 	float z, zR;
-	Point* prev;
-	Point* next;
-public:
+	Point() {
+		x = 0;
+		y = 0;
+		z = 0;
+	}
 	char* print() {
 		char print[50];
 		sprintf(print, "P%d (%.4f, %.4f, %.4f)", num, x, y, z);
 		return print;
+	}
+	bool operator==(char* idComp) {
+		if (strcmp(this->id, idComp) == 0)
+			return true;
+		else return false;
 	}
 };
 
@@ -216,7 +227,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hEdtMatrix1 = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_GROUP | WS_TABSTOP | ES_CENTER | ES_MULTILINE,
 		10, 60, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -229,7 +240,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hEdtMatrix2 = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | ES_CENTER | ES_MULTILINE,
 		365, 60, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -298,7 +309,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hBtnRestart = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
 		"Reiniciar Matriz",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		10, 240, 350, 25,
 		hWindow, (HMENU)BTN_RESTART, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -332,7 +343,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hBtnTrans = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
 		"Aplicar",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		274, 300, 86, 25,
 		hWindow, (HMENU)BTN_TRANS, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -384,7 +395,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hBtnRotat = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
 		"Aplicar",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		274, 370, 86, 25,
 		hWindow, (HMENU)BTN_ROTAT, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -436,7 +447,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hBtnScala = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
 		"Aplicar",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		274, 440, 86, 25,
 		hWindow, (HMENU)BTN_SCALA, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -467,8 +478,8 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hLbxPoints = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "LISTBOX",
 		NULL,
-		LBS_DISABLENOSCROLL | LBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
-		370, 60, 240, 140,
+		LBS_DISABLENOSCROLL | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE | WS_VSCROLL,
+		370, 85, 240, 117,
 		hWindow, (HMENU)LBX_POINTS, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hEdtPX = CreateWindowEx(
@@ -496,31 +507,38 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		"STATIC",
 		"x",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
-		370, 195, 80, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		370, 198, 80, 16, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStP2 = CreateWindow(
 		"STATIC",
 		"y",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
-		450, 195, 80, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		450, 198, 80, 16, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStP3 = CreateWindow(
 		"STATIC",
 		"z",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
-		530, 195, 80, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+		530, 198, 80, 16, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
+	hBtnCleanList = CreateWindowEx(
+		WS_EX_CLIENTEDGE, "BUTTON",
+		"Limpiar Lista",
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		370, 60, 240, 25,
+		hWindow, (HMENU)BTN_CLEANLIST, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnAddP = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
 		"Agregar",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		370, 240, 120, 25,
 		hWindow, (HMENU)BTN_ADDP, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hBtnDelP = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
 		"Borrar",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		490, 240, 120, 25,
 		hWindow, (HMENU)BTN_DELP, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -533,7 +551,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hBtnCalculate = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "BUTTON",
 		"Calcular Puntos",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		370, 300, 240, 25,
 		hWindow, (HMENU)BTN_CALCULATE, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -752,7 +770,7 @@ void rotate(float x, float y, float z) {
 			for (short i = 0; i < 4; i++) {
 				float acum = 0;
 				for (short k = 0; k < 4; k++)
-					acum += compositeMatrix[k][j] * rotx[i][k];
+					acum += compositeMatrix[j][k] * rotx[k][i];
 				result[j][i] = acum;
 			}
 		}
@@ -796,7 +814,7 @@ void rotate(float x, float y, float z) {
 			for (short i = 0; i < 4; i++) {
 				float acum = 0;
 				for (short k = 0; k < 4; k++)
-					acum += compositeMatrix[k][j] * rotz[i][k];
+					acum += compositeMatrix[j][k] * rotz[k][i];
 				result[j][i] = acum;
 			}
 		}
@@ -835,21 +853,21 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		hBtnArit = CreateWindowEx(
 			0, "BUTTON", 
 			"Matrices Aritméticas", 
-			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 
+			WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 
 			10, 10, 150, 25, 
 			hWnd, (HMENU)BTN_ARIT, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
 		);
 		hBtnComp = CreateWindowEx(
 			0,"BUTTON",
 			"Matrices Compuestas",
-			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+			WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 			165, 10, 150, 25,
 			hWnd, (HMENU)BTN_COMP, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
 		);
 		hBtnClean = CreateWindowEx(
 			0, "BUTTON",
 			"Limpiar Cuadros",
-			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+			WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 			465, 10, 150, 25,
 			hWnd, (HMENU)BTN_CLEAN, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
 		);
@@ -950,11 +968,11 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				sscanf(buff, "%f", &x);
 			}
 			if (lengthY > 0) {
-				GetWindowText(hEdtTY, buff, lengthX + 1);
+				GetWindowText(hEdtTY, buff, lengthY + 1);
 				sscanf(buff, "%f", &y);
 			}
 			if (lengthZ > 0) {
-				GetWindowText(hEdtTZ, buff, lengthX + 1);
+				GetWindowText(hEdtTZ, buff, lengthZ + 1);
 				sscanf(buff, "%f", &z);
 			}
 			translate(x, y, z);
@@ -967,19 +985,26 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_ROTAT: {
 			char buff[30];
 			float x = 0, y = 0, z = 0;
-			int length = GetWindowTextLength(hEdtRX);
-			if (length > 0) {
-				GetWindowText(hEdtRX, buff, length + 1);
-				sscanf(buff, "%f", &x);
+			int lengthX = GetWindowTextLength(hEdtRX);
+			int lengthY = GetWindowTextLength(hEdtRY);
+			int lengthZ = GetWindowTextLength(hEdtRZ);
+			if (lengthZ == 0) {
+				if (lengthY == 0) {
+					if (lengthX == 0) {
+						break;
+					}
+					else {
+						GetWindowText(hEdtRX, buff, lengthX + 1);
+						sscanf(buff, "%f", &x);
+					}
+				}
+				else {
+					GetWindowText(hEdtRY, buff, lengthY + 1);
+					sscanf(buff, "%f", &y);
+				}
 			}
-			length = GetWindowTextLength(hEdtRY);
-			if (length > 0) {
-				GetWindowText(hEdtRY, buff, length + 1);
-				sscanf(buff, "%f", &y);
-			}
-			length = GetWindowTextLength(hEdtRZ);
-			if (length > 0) {
-				GetWindowText(hEdtRZ, buff, length + 1);
+			else {
+				GetWindowText(hEdtRZ, buff, lengthZ + 1);
 				sscanf(buff, "%f", &z);
 			}
 			rotate(x, y, z);
@@ -1001,11 +1026,11 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				sscanf(buff, "%f", &x);
 			}
 			if (lengthY > 0) {
-				GetWindowText(hEdtSY, buff, lengthX + 1);
+				GetWindowText(hEdtSY, buff, lengthY + 1);
 				sscanf(buff, "%f", &y);
 			}
 			if (lengthZ > 0) {
-				GetWindowText(hEdtSZ, buff, lengthX + 1);
+				GetWindowText(hEdtSZ, buff, lengthZ + 1);
 				sscanf(buff, "%f", &z);
 			}
 			scale(x, y, z);
@@ -1015,18 +1040,54 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			SetWindowText(hEdtSZ, "");
 			break;
 		}
+		case BTN_ADDP: {
+			Point temp;
+			char buff[30];
+			counter++;
+			snprintf(buff, 30, "P%d", counter);
+			strcpy(temp.id, buff);
+			temp.num = counter;
+			short lengthX = GetWindowTextLength(hEdtPX);
+			short lengthY = GetWindowTextLength(hEdtPY);
+			short lengthZ = GetWindowTextLength(hEdtPZ);
+			if (lengthX == 0 & lengthY == 0 & lengthZ == 0) break;
+			if (lengthX > 0) {
+				GetWindowText(hEdtPX, buff, lengthX + 1);
+				sscanf(buff, "%f", &temp.x);
+			}
+			if (lengthY > 0) {
+				GetWindowText(hEdtPY, buff, lengthY + 1);
+				sscanf(buff, "%f", &temp.y);
+			}
+			if (lengthZ > 0) {
+				GetWindowText(hEdtPZ, buff, lengthZ + 1);
+				sscanf(buff, "%f", &temp.z);
+			}
+			listPoints.AddNode(temp);
+			listPoints.PrintOnWindow(hLbxPoints, 0);
+			SetWindowText(hEdtPX, "");
+			SetWindowText(hEdtPY, "");
+			SetWindowText(hEdtPZ, "");
+			break;
 		}
-		if (LOWORD(wParam) == EDT_RX & HIWORD(wParam) == EN_SETFOCUS) {
-			SetWindowText(hEdtRY, "");
-			SetWindowText(hEdtRZ, "");
+		case BTN_DELP: {
+			char buff[MAX_PATH];
+			char* string;
+			int i = SendMessage(hLbxPoints, LB_GETCURSEL, 0, 0);
+			if (i == -1) break;
+			SendMessage(hLbxPoints, LB_GETTEXT, i, (LPARAM)buff);
+			string = buff;
+			while (*string != 32) string++;
+			*string = NULL;
+			listPoints.DeleteNode(listPoints.SearchNode(buff));
+			listPoints.PrintOnWindow(hLbxPoints, 0);
+			if (listPoints.CountList() == 0) counter = 0;
+			break;
 		}
-		if (LOWORD(wParam) == EDT_RY & HIWORD(wParam) == EN_SETFOCUS) {
-			SetWindowText(hEdtRX, "");
-			SetWindowText(hEdtRZ, "");
-		}
-		if (LOWORD(wParam) == EDT_RZ & HIWORD(wParam) == EN_SETFOCUS) {
-			SetWindowText(hEdtRX, "");
-			SetWindowText(hEdtRY, "");
+		case BTN_CLEANLIST:
+			listPoints.EraseList();
+			listPoints.PrintOnWindow(hLbxPoints, 0);
+			counter = 0;
 		}
 		break;
 	}
@@ -1085,8 +1146,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 	MSG msg; 
 	ZeroMemory(&msg, sizeof(MSG));
 	while (GetMessage(&msg, NULL, 0, 0)){
-		TranslateMessage(&msg);
-		DispatchMessage(&msg); 
+		if (!IsDialogMessage(hWnd, &msg)){
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 	}
 	return 0;
 }

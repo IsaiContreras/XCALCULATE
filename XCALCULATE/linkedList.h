@@ -16,7 +16,7 @@ public:
 	void EraseList();
 	void AddNode(T);
 	void DeleteNode(Node<T>*);
-	Node<T> *SearchNode(int);
+	template <typename G> Node<T> *SearchNode(G);
 	void PrintOnWindow(HWND, int);
 	int CountList();
 };
@@ -27,11 +27,7 @@ template <typename T> LinkedList<T>::LinkedList() {
 	last = NULL;
 }
 template <typename T> LinkedList<T>::~LinkedList() {
-	while (first != NULL) {
-		Node<T>* deleter = first;
-		first = first->next;
-		delete deleter;
-	}
+	EraseList();
 }
 template <typename T> void LinkedList<T>::EraseList() {
 	while (first != NULL) {
@@ -74,7 +70,7 @@ template <typename T> void LinkedList<T>::DeleteNode(Node<T>* deleter) {
 		delete deleter;
 	}
 }
-template <typename T> Node<T>* LinkedList<T>::SearchNode(int ref) {
+template <typename T> template <typename G> Node<T>* LinkedList<T>::SearchNode(G ref) {
 	Node<T> *aux = first;
 	while (aux != NULL) {
 		if (aux->data == ref) {
@@ -90,7 +86,9 @@ template <typename T> void LinkedList<T>::PrintOnWindow(HWND hWindow, int window
 		SendMessage(hWindow, LB_RESETCONTENT, 0, 0);
 		Node<T> *aux = first;
 		while (aux != NULL) {
-			SendMessage(hWindow, LB_ADDSTRING, 0, (LPARAM)aux->callPrint());
+			char buff[MAX_PATH];
+			strcpy(buff, aux->callPrint());
+			SendMessage(hWindow, LB_ADDSTRING, 0, (LPARAM)buff);
 			aux = aux->next;
 		}
 		break;
@@ -99,6 +97,8 @@ template <typename T> void LinkedList<T>::PrintOnWindow(HWND hWindow, int window
 		SendMessage(hWindow, CB_RESETCONTENT, 0, 0);
 		Node<T> *aux = first;
 		while (aux != NULL) {
+			char buff[MAX_PATH];
+			strcpy(buff, aux->callPrint());
 			SendMessage(hWindow, CB_ADDSTRING, 0, (LPARAM)aux->callPrint());
 			aux = aux->next;
 		}
