@@ -228,7 +228,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hBtnCleanBox = CreateWindowEx(
 		0, "BUTTON",
 		"Limpiar Cuadros",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		465, 10, 150, 25,
 		hWindow, (HMENU)BTN_CLEANBOXA, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -241,7 +241,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hEdtMatrix1 = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_GROUP | WS_TABSTOP | ES_CENTER | ES_MULTILINE,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_WANTRETURN,
 		10, 60, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -254,7 +254,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	hEdtMatrix2 = CreateWindowEx(
 		WS_EX_CLIENTEDGE, "EDIT",
 		NULL,
-		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | ES_CENTER | ES_MULTILINE,
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_CENTER | ES_MULTILINE | ES_WANTRETURN,
 		365, 60, 250, 200,
 		hWindow, (HMENU)EDT_MATRIX1, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -311,7 +311,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	hBtnCleanBox = CreateWindowEx(
 		0, "BUTTON",
 		"Limpiar Cuadros",
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		465, 10, 150, 25,
 		hWindow, (HMENU)BTN_CLEANBOXC, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
