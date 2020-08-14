@@ -581,7 +581,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 		WS_EX_STATICEDGE, "EDIT",
 		NULL,
 		WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_READONLY,
-		370, 325, 240, 205,
+		370, 325, 240, 165,
 		hWindow, (HMENU)EDT_RPOINTS, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 }
