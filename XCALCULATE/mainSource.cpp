@@ -948,6 +948,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		case BTN_CLEANBOXC:
 			restartCompositeMatrix();
 			listPoints.EraseList();
+			counter = 0;
 			SendMessage(hLbxPoints, LB_RESETCONTENT, 0, 0);
 			SetWindowText(hEdtRPoints, "");
 			break;
