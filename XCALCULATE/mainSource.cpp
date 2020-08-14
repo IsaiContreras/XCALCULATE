@@ -14,7 +14,7 @@
 #define BTN_ADD 106
 #define BTN_SUB	 107
 #define BTN_MULT 108
-#define BTN_CLEAN 109
+#define BTN_CLEANBOXA 109
 #define EDT_MATRIXC 110
 #define EDT_TX 111
 #define EDT_TY 112
@@ -38,6 +38,7 @@
 #define BTN_ADDP 130
 #define BTN_DELP 131
 #define BTN_CALCULATE 132
+#define BTN_CLEANBOXC 133
 
 #define PI 3.1416
 #define TO_DEG(A) A*(180/PI)
@@ -47,6 +48,7 @@
 #pragma region HANDLERS
 HWND hBtnArit;
 HWND hBtnComp;
+HWND hStMain;
 //AritmeticMenu
 HWND hEdtMatrix1;
 HWND hEdtMatrix2;
@@ -54,7 +56,7 @@ HWND hEdtMatrix3;
 HWND hBtnAdd;
 HWND hBtnSub;
 HWND hBtnMult;
-HWND hBtnClean;
+HWND hBtnCleanBox;
 HWND hStA1;
 HWND hStA2;
 HWND hStA3;
@@ -223,6 +225,13 @@ LinkedList<Point> listPoints;
 #pragma region CONSTRUCTORES VENTANAS
 void CreateAritmeticMenu(HWND hWindow) {
 	EnableWindow(hBtnArit, false); EnableWindow(hBtnComp, true);
+	hBtnCleanBox = CreateWindowEx(
+		0, "BUTTON",
+		"Limpiar Cuadros",
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		465, 10, 150, 25,
+		hWindow, (HMENU)BTN_CLEANBOXA, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
 	hStA1 = CreateWindow(
 		"STATIC",
 		"Matriz 1",
@@ -285,6 +294,7 @@ void CreateAritmeticMenu(HWND hWindow) {
 	);
 }
 void DestroyAritmeticMenu() {
+	DestroyWindow(hBtnCleanBox);
 	DestroyWindow(hStA1);
 	DestroyWindow(hEdtMatrix1);
 	DestroyWindow(hStA2);
@@ -294,10 +304,17 @@ void DestroyAritmeticMenu() {
 	DestroyWindow(hBtnAdd);
 	DestroyWindow(hBtnSub);
 	DestroyWindow(hBtnMult);
-	hEdtMatrix1 = hEdtMatrix2 = hEdtMatrix3 = hBtnAdd = hBtnSub = hBtnMult = NULL;
+	hBtnCleanBox = hEdtMatrix1 = hEdtMatrix2 = hEdtMatrix3 = hBtnAdd = hBtnSub = hBtnMult = NULL;
 }
 void CreateCompositeMatrixMenu(HWND hWindow) {
 	EnableWindow(hBtnComp, false); EnableWindow(hBtnArit, true);
+	hBtnCleanBox = CreateWindowEx(
+		0, "BUTTON",
+		"Limpiar Cuadros",
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		465, 10, 150, 25,
+		hWindow, (HMENU)BTN_CLEANBOXC, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
+	);
 	hStM = CreateWindow(
 		"STATIC",
 		"Matriz Compuesta",
@@ -569,6 +586,7 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	);
 }
 void DestroyCompositeMatrixMenu() {
+	DestroyWindow(hBtnCleanBox);
 	DestroyWindow(hStM);
 	DestroyWindow(hEdtCompMatrix);
 	DestroyWindow(hBtnRestart);
@@ -596,6 +614,7 @@ void DestroyCompositeMatrixMenu() {
 	DestroyWindow(hStS1);
 	DestroyWindow(hStS2);
 	DestroyWindow(hStS3);
+	DestroyWindow(hBtnCleanList);
 	DestroyWindow(hLbxPoints);
 	DestroyWindow(hEdtPX);
 	DestroyWindow(hEdtPY);
@@ -609,10 +628,10 @@ void DestroyCompositeMatrixMenu() {
 	DestroyWindow(hStRP);
 	DestroyWindow(hBtnCalculate);
 	DestroyWindow(hEdtRPoints);
-	hStM = hEdtCompMatrix = hBtnRestart = hStT = hEdtTX = hEdtTY = hEdtTZ = hBtnTrans = hStT1 = hStT2 = hStT3 = NULL;
+	hBtnCleanBox = hStM = hEdtCompMatrix = hBtnRestart = hStT = hEdtTX = hEdtTY = hEdtTZ = hBtnTrans = hStT1 = hStT2 = hStT3 = NULL;
 	hStR = hEdtRX = hEdtRY = hEdtRZ = hBtnRotat = hStR1 = hStR2 = hStR3 = NULL;
 	hStS = hEdtSX = hEdtSY = hEdtSZ = hBtnScala = hStS1 = hStS2 = hStS3 = NULL;
-	hStP = hLbxPoints = hEdtPX = hEdtPY = hEdtPZ = hBtnAddP = hBtnDelP = hStP = hStP1 = hStP2 = hStP3 = hStRP = hBtnCalculate = hEdtRPoints = NULL;
+	hStP = hBtnCleanList = hLbxPoints = hEdtPX = hEdtPY = hEdtPZ = hBtnAddP = hBtnDelP = hStP = hStP1 = hStP2 = hStP3 = hStRP = hBtnCalculate = hEdtRPoints = NULL;
 }
 #pragma endregion
 
@@ -881,45 +900,52 @@ template <typename T> void resultPoints() {
 LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 	case WM_CREATE: {
+		hStMain = CreateWindow(
+			"STATIC",
+			"¿Con qué desea trabajar?",
+			WS_CHILD | WS_VISIBLE | ES_CENTER,
+			170, 60, 300, 20, hWnd, NULL, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
+		);
 		hBtnArit = CreateWindowEx(
 			0, "BUTTON", 
 			"Matrices Aritméticas", 
 			WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 
-			10, 10, 150, 25, 
+			245, 100, 150, 90, 
 			hWnd, (HMENU)BTN_ARIT, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
 		);
 		hBtnComp = CreateWindowEx(
 			0,"BUTTON",
 			"Matrices Compuestas",
 			WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-			165, 10, 150, 25,
+			245, 200, 150, 90,
 			hWnd, (HMENU)BTN_COMP, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
 		);
-		hBtnClean = CreateWindowEx(
-			0, "BUTTON",
-			"Limpiar Cuadros",
-			WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-			465, 10, 150, 25,
-			hWnd, (HMENU)BTN_CLEAN, (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL
-		);
-		CreateAritmeticMenu(hWnd);
 		break;
 	}
 	case WM_COMMAND: {
 		switch (wParam) {
 		case BTN_ARIT:
+			DestroyWindow(hStMain);
+			MoveWindow(hBtnArit, 10, 10, 150, 25, true);
+			MoveWindow(hBtnComp, 160, 10, 150, 25, true);
 			DestroyCompositeMatrixMenu();
 			CreateAritmeticMenu(hWnd);
 			break;
 		case BTN_COMP:
+			DestroyWindow(hStMain);
+			MoveWindow(hBtnArit, 10, 10, 150, 25, true);
+			MoveWindow(hBtnComp, 160, 10, 150, 25, true);
 			DestroyAritmeticMenu();
 			CreateCompositeMatrixMenu(hWnd);
 			printCompositeMatrix();
+			listPoints.PrintOnWindow(hLbxPoints, 0);
 			break;
-		case BTN_CLEAN:
+		case BTN_CLEANBOXA:
 			SetWindowText(hEdtMatrix1, "");
 			SetWindowText(hEdtMatrix2, "");
 			SetWindowText(hEdtMatrix3, "");
+			break;
+		case BTN_CLEANBOXC:
 			restartCompositeMatrix();
 			listPoints.EraseList();
 			SendMessage(hLbxPoints, LB_RESETCONTENT, 0, 0);
