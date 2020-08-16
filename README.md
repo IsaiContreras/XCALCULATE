@@ -1,7 +1,7 @@
 # XCALCULATE by CYANx86
 
 XCALCULATE es una aplicación construida con las herramientas
-gráficas de Windows. Permite realizar operaciones aritmeticas
+gráficas de Windows. Permite realizar operaciones aritméticas
 con matrices y cálculos con matrices compuestas para transformar
 puntos.
 Este proyecto fue realizado con fines de investigación y práctica,
@@ -54,16 +54,16 @@ Para borrar el contenido de todos los cuadros de texto, presione el botón "Limp
 
 La matriz compuesta inicia con ceros.
 Para transformarla, ingrese las cantidades deseadas en la transformación.
-* Para traslación, ingrese un número para "x", "y" y "z".
-* Para rotación solo puede realizar una rotación en un eje. Ingrese un número para "x", "y" o "z".
-* Para escalamiento, ingrese un número para "x", "y" y "z".
+* Para traslación, ingrese coordenadas de traslación para "x", "y" y "z".
+* Para rotación solo puede realizar una rotación en un eje. Ingrese un ángulo para "x", "y" o "z".
+* Para escalamiento, ingrese la magnitud de escala para "x", "y" y "z".
 
 Para ejecutar la transformación, presione el botón "Aplicar" de la transformación deseada.
 
 Si deja un espacio en blanco, este se tomará como cero.
 Es importante recalcar que para rotación se tomará en cuenta el último numero ingresado
 en caso de que haya escrito en más de un eje, pues solo se puede ejecutar una rotación
-en un eje. Si necesita hacer multiples rotaciones, apliquelas una por una y en orden.
+en un eje. Si necesita hacer multiples rotaciones, aplíquelas una por una y en orden.
 
 Para deshacer todas las transformaciones aplicadas, es decir, inicializar la matriz compuesta en ceros,
 presione "Reiniciar Matriz".
@@ -81,7 +81,7 @@ serán eliminados.
 
 ### Calcular
 
-Para realizar el calculo final de los puntos transformados, es necesario
+Para realizar el cálculo final de los puntos transformados, es necesario
 haber transformado la matriz compuesta y tener al menos un punto agregado
 en la lista de puntos. Presione "Calcular Puntos".
 

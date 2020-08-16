@@ -371,19 +371,19 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	);
 	hStT1 = CreateWindow(
 		"STATIC",
-		"x",
+		"Cord. X",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		10, 325, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStT2 = CreateWindow(
 		"STATIC",
-		"y",
+		"Cord. Y",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		98, 325, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStT3 = CreateWindow(
 		"STATIC",
-		"z",
+		"Cord. Z",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		186, 325, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -423,19 +423,19 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	);
 	hStR1 = CreateWindow(
 		"STATIC",
-		"x",
+		"Ang° X",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		10, 395, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStR2 = CreateWindow(
 		"STATIC",
-		"y",
+		"Ang° Y",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		98, 395, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStR3 = CreateWindow(
 		"STATIC",
-		"z",
+		"Ang° Z",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		186, 395, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
@@ -475,19 +475,19 @@ void CreateCompositeMatrixMenu(HWND hWindow) {
 	);
 	hStS1 = CreateWindow(
 		"STATIC",
-		"x",
+		"Mag. X",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		10, 465, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStS2 = CreateWindow(
 		"STATIC",
-		"y",
+		"Mag. Y",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		98, 465, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
 	hStS3 = CreateWindow(
 		"STATIC",
-		"z",
+		"Mag. Z",
 		WS_CHILD | WS_VISIBLE | ES_CENTER,
 		186, 465, 86, 20, hWindow, NULL, (HINSTANCE)GetWindowLongPtr(hWindow, GWLP_HINSTANCE), NULL
 	);
