@@ -9,6 +9,9 @@ si usted lo desea puede descargar el código fuente, observarlo,
 analizarlo, modificarlo o mejorarlo. Este proyecto se considera
 OPEN SOURCE.
 
+Agregada una función parcial para calcular rotación de un vector por
+Quaterniones.
+
 ## ¿Cómo funciona?
 
 Al ejecutar la aplicación, observará este menú.
@@ -46,11 +49,11 @@ en el cuadro "Matriz Resultante".
 
 Para borrar el contenido de todos los cuadros de texto, presione el botón "Limpiar Cuadros".
 
-## Función Matriz Compuesta
+### Función Matriz Compuesta
 
 <img src="images/composite1.png" width="450">
 
-### Transformar la matriz
+#### Transformar la matriz
 
 La matriz compuesta inicia con ceros.
 Para transformarla, ingrese las cantidades deseadas en la transformación.
@@ -68,7 +71,7 @@ en un eje. Si necesita hacer multiples rotaciones, aplíquelas una por una y en 
 Para deshacer todas las transformaciones aplicadas, es decir, inicializar la matriz compuesta en ceros,
 presione "Reiniciar Matriz".
 
-### Introducir los Puntos
+#### Introducir los Puntos
 
 Para añadir los puntos que se transformarán, ingrese sus coordenadas
 en los recuadros correspondientes para "x", "y" y "z".
@@ -79,7 +82,7 @@ Para quitar un punto, seleccione el elemento de la lista y pulse "Borrar".
 Si necesita vaciar la lista, presione "Limpiar Lista". Todos los puntos agregados
 serán eliminados.
 
-### Calcular
+#### Calcular
 
 Para realizar el cálculo final de los puntos transformados, es necesario
 haber transformado la matriz compuesta y tener al menos un punto agregado
@@ -91,3 +94,18 @@ en el orden en los que fueron agregados a la lista.
 Al presionar "Limpiar Cuadros", se reiniciará la matriz compuesta, la lista de puntos
 se vaciará y el cuadro de Puntos Resultantes se limpiará para empezar con un nuevo
 cálculo.
+
+### Función Quaterniones
+
+Calcula el vector resultante al rotar por medio de Quaterniones.
+
+Introduce el ángulo de rotación en grados en el cuadro "Ángulo °".
+
+Introduce el vector a rotar en la sección "Vector" escribiendo el
+valor correspondiente para "i", "j" y "k".
+
+Introduce el Punto P(x, y, z).
+
+Una vez haya llenado los datos, presione "Vector Resultante" para
+obtener el resultado. El vector resultante se mostrará en el
+cuadro debajo del botón.

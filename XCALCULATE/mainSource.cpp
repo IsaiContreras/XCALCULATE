@@ -785,7 +785,7 @@ void CreateQuaternionMenu() {
 	);
 	hBtnRQ = CreateWindowEx(
 		0, "BUTTON",
-		"Quaternion Resultante",
+		"Vector Resultante",
 		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		370, 80, 240, 25,
 		hwnd, (HMENU)BTN_RQ, (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), NULL
